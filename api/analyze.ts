@@ -1,9 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'node:http';
-import {
-  FORENSIC_MODEL,
-  runGeminiForensicsWithRetry,
-  type AnalyzeRequestBody,
-} from '../lib/forensics';
+import type { AnalyzeRequestBody } from '../lib/forensics';
 
 type VercelRequest = IncomingMessage & { body?: unknown; method?: string };
 
@@ -49,6 +45,11 @@ export default async function handler(
   }
 
   try {
+    // Imported lazily so any load/runtime failure is caught and returned as
+    // JSON instead of crashing the function with an opaque empty 500.
+    const { FORENSIC_MODEL, runGeminiForensicsWithRetry } = await import(
+      '../lib/forensics'
+    );
     const rawJson = await runGeminiForensicsWithRetry(body);
     const parsed = JSON.parse(rawJson) as Record<string, unknown>;
     sendJson(res, 200, {
@@ -57,6 +58,7 @@ export default async function handler(
       analyzedAt: new Date().toISOString(),
     });
   } catch (err: unknown) {
+    console.error('[veridex] /api/analyze failed:', err);
     const message =
       err instanceof Error ? err.message : 'Forensic analysis request failed';
     const status =
