@@ -1,0 +1,6 @@
+{
+  "name": "VERIDEX",
+  "description": "Verity + Index — Computer-vision and AI forensic platform for detecting GAN, diffusion, and document manipulation artifacts via mobile camera and browser upload.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
