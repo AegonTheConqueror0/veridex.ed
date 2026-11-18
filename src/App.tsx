@@ -178,13 +178,22 @@ export default function App() {
         }),
       });
 
-      const payload = (await response.json()) as ForensicAnalysisResult & {
-        error?: string;
-      };
+      const rawBody = await response.text();
+      let payload: (ForensicAnalysisResult & { error?: string }) | null = null;
+      try {
+        payload = JSON.parse(rawBody) as ForensicAnalysisResult & {
+          error?: string;
+        };
+      } catch {
+        payload = null;
+      }
 
-      if (!response.ok) {
+      if (!response.ok || !payload) {
         throw new Error(
-          payload.error || `Server returned HTTP ${response.status}`
+          payload?.error ||
+            (rawBody.trimStart().startsWith('<')
+              ? `Forensic API returned a non-JSON page (HTTP ${response.status}). The /api/analyze endpoint is likely not deployed.`
+              : `Server returned HTTP ${response.status}`)
         );
       }
 
