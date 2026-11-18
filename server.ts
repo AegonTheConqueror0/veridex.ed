@@ -8,7 +8,7 @@ import {
   FORENSIC_MODEL,
   runGeminiForensicsWithRetry,
   type AnalyzeRequestBody,
-} from './lib/forensics';
+} from './api/analyze';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
